@@ -162,6 +162,11 @@ exports.loginUser = async (req, res, next) => {
           }
         }
       );
+    }else{
+      res.status(301).json({
+      code: 0,
+      message: "User not found",
+    });
     }
   } catch {
     res.status(500).json({
