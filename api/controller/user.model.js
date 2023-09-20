@@ -78,12 +78,10 @@ exports.partialDelete = async (req, res, next) => {
 // get All users
 exports.getUser = async (req, res, next) => {
   try {
-    const user = await User.find(
-      { role: "customer" },
-      { password: 0, admin_email: 0 }
-    );
-    if (user.length > 0) {
+    const user = await User.find({ },{ password: 0, admin_email: 0 });
+     if (user != null) {
       res.status(200).json({
+        code:1,
         data: user,
       });
     } else {
