@@ -41,7 +41,9 @@ exports.postPage = async (req, res, next) => {
         land_offer1: req.body.land_offer1,
         land_offer2: req.body.land_offer2,
         land_offer3: req.body.land_offer3,
-        land_offer4: req.body.land_offer4
+        land_offer4: req.body.land_offer4,
+        slider1:req.body.slider1,
+        slider2:req.body.slider2
       });
       const pages = await pagesData.save();
       res.status(200).json({
