@@ -13,7 +13,9 @@ const pagesSchema = Schema({
     land_offer1: { type: String, require: true },
     land_offer2: { type: String, require: true },
     land_offer3: { type: String, require: true },
-    land_offer4: { type: String, require: true }
+    land_offer4: { type: String, require: true },
+    slider1:{ type: String, require: true },
+    slider2:{ type: String, require: true }
 })
 
 module.exports = mongoose.model('Pages', pagesSchema)
