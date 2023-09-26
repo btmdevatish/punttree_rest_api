@@ -14,12 +14,15 @@ router.post("/login", User.loginUser);
 //Delete user
 router.delete("/signup/:userId", checkauth, User.deleteUser);
 
-//
+//update
 router.put("/pardelete/:userId", checkauth, User.partialDelete);
 
 //get users data
 router.get("/", checkauth, User.getUser);
 
 router.delete("/:userId", checkauth, User.DeleteUser);
+
+// reset password
+router.put("/reset/:userId", checkauth, User.resetUserPass);
 
 module.exports = router;
