@@ -64,7 +64,7 @@ exports.partialDelete = async (req, res, next) => {
     const user = await User.findByIdAndUpdate(req.params.userId, req.body);
     res.status(200).json({
       code: 1,
-      message: "Delete request send successfully",
+      message: "Update successfully",
       data: user,
     });
   } catch (err) {
@@ -78,8 +78,8 @@ exports.partialDelete = async (req, res, next) => {
 // get All users
 exports.getUser = async (req, res, next) => {
   try {
-    const user = await User.find({ },{ password: 0, admin_email: 0 });
-     if (user != null) {
+    const user = await User.find({ role: { $ne: 'super_admin' } },{ password: 0, admin_email: 0 });
+    if (user != null) {
       res.status(200).json({
         code:1,
         data: user,
@@ -124,10 +124,12 @@ exports.DeleteUser = async (req, res, next) => {
   }
 };
 
+//logn user
 exports.loginUser = async (req, res, next) => {
   try {
     const user = await User.find({ email: req.body.email });
-    if (user != null) {
+    console.log(user)
+    if (user != null && (user[0].is_active == true )) {
       // compare password
       bcrypt.compare(
         req.body.password,
@@ -150,8 +152,12 @@ exports.loginUser = async (req, res, next) => {
             });
 
             res.status(200).json({
+              code:1,
               message: "Auth successfully",
-              token: token
+              token: token,
+              name:user[0].full_name,
+              role:user[0].role,
+              email:user[0].email
             });
           } else {
             res.status(404).json({
@@ -161,15 +167,64 @@ exports.loginUser = async (req, res, next) => {
         }
       );
     }else{
-      res.status(301).json({
-      code: 0,
-      message: "User not found",
-    });
+      res.status(200).json({
+        code: 0,
+        message: "User not active",
+      });
     }
   } catch {
     res.status(500).json({
       code: 0,
       message: "User not exits",
+    });
+  }
+};
+
+
+
+//reset pssword
+exports.resetUserPass = async (req, res, next) => {
+  try {
+    const newPassword = req.body.password; // Assuming you receive the new password in the request body
+
+    // Hash the new password
+    bcrypt.hash(newPassword, 10, async (err, hash) => {
+      if (err) {
+        return res.status(500).json({
+          error: err,
+        });
+      }
+
+      try {
+        // Find the user by ID and update the password field
+        const updatedUser = await User.findByIdAndUpdate(
+          req.params.userId,
+          { password: hash },
+          { new: true } // To return the updated user document
+        );
+
+        if (!updatedUser) {
+          return res.status(404).json({
+            code: 0,
+            message: "User not found",
+          });
+        }
+
+        res.status(200).json({
+          code: 1,
+          message: "Password Updated",
+        });
+      } catch (updateErr) {
+        res.status(500).json({
+          code: 0,
+          message: "Something went wrong",
+        });
+      }
+    });
+  } catch (err) {
+    res.status(400).json({
+      code: 0,
+      message: "Bad Request",
     });
   }
 };
